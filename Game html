@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BRAINROT ULTRA+++ GODMODE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+  margin:0; padding:0; background:black; color:white; font-family:Arial; overflow:hidden;
+}
+#menu, #game, #bossFight {
+  position:absolute; top:0; left:0; width:100%; height:100%;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+}
+button {
+  padding:20px; margin:10px; font-size:22px; border:none; border-radius:15px; background:linear-gradient(90deg,#ff00ff,#00ffff); color:white; cursor:pointer;
+}
+#flash {
+  position:absolute; top:0; left:0; width:100%; height:100%; background:white; opacity:0; pointer-events:none;
+}
+.jumpscare {
+  position:absolute; width:100%; height:100%; background:url('https://i.imgur.com/3n7z1ZQ.jpeg') no-repeat center center/cover; animation:pop 0.3s;
+}
+@keyframes pop { from{transform:scale(0);} to{transform:scale(1);} }
+.particles {
+  position:absolute; width:10px; height:10px; border-radius:50%; background:hsl(var(--h),100%,50%); pointer-events:none; animation:particleMove 1s forwards;
+}
+@keyframes particleMove {
+  to {transform:translate(calc(var(--dx)*20px), calc(var(--dy)*20px)); opacity:0;}
+}
+</style>
+</head>
+<body>
+
+<div id="menu">
+  <h1>BRAINROT ULTRA+++ GODMODE</h1>
+  <button onclick="startGame()">START</button>
+</div>
+
+<div id="game" style="display:none;">
+  <h2 id="scoreTxt">Score: 0</h2>
+  <div id="flash"></div>
+</div>
+
+<div id="bossFight" style="display:none;">
+  <h1>BOSS MODE</h1>
+  <h2 id="bossHp">HP: 50</h2>
+  <button onclick="hitBoss()">HIT BOSS</button>
+</div>
+
+<audio id="bgm" loop>
+  <source src="https://www.myinstants.com/media/sounds/among-us-task-complete.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let score=0;
+let bossHP=50;
+let interval;
+
+function startGame(){
+  document.getElementById('menu').style.display='none';
+  document.getElementById('game').style.display='flex';
+  document.getElementById('bgm').play();
+  spawnTargets();
+}
+
+function spawnTargets(){
+  interval=setInterval(()=>{
+    let t=document.createElement('div');
+    t.style.position='absolute';
+    t.style.left=Math.random()*90+'%';
+    t.style.top=Math.random()*90+'%';
+    t.style.width='60px'; t.style.height='60px';
+    t.style.borderRadius='50%';
+    t.style.background='hsl('+Math.random()*360+',100%,50%)';
+    t.style.boxShadow='0 0 20px white';
+    t.style.cursor='pointer';
+    t.onclick=()=>{
+      score++;
+      navigator.vibrate?.(50);
+      document.getElementById('scoreTxt').innerText='Score: '+score;
+      createParticles(t);
+      t.remove();
+      if(score>=15) startBoss();
+    };
+    document.body.appendChild(t);
+    setTimeout(()=>t.remove(),1500);
+  },400);
+}
+
+function createParticles(target){
+  for(let i=0;i<5;i++){
+    let p=document.createElement('div');
+    p.className='particles';
+    p.style.left=target.style.left; p.style.top=target.style.top;
+    p.style.setProperty('--dx',(Math.random()*2-1));
+    p.style.setProperty('--dy',(Math.random()*2-1));
+    p.style.setProperty('--h',Math.random()*360);
+    document.body.appendChild(p);
+    setTimeout(()=>p.remove(),1000);
+  }
+  flash();
+}
+
+function flash(){
+  let f=document.getElementById('flash');
+  f.style.opacity=0.5;
+  setTimeout(()=>f.style.opacity=0,100);
+}
+
+function startBoss(){
+  clearInterval(interval);
+  document.getElementById('game').style.display='none';
+  document.getElementById('bossFight').style.display='flex';
+}
+
+function hitBoss(){
+  bossHP--;
+  navigator.vibrate?.([50,20,50]);
+  document.getElementById('bossHp').innerText='HP: '+bossHP;
+  if(Math.random()<0.3) jumpscare();
+  if(Math.random()<0.5) shakeScreen();
+  if(bossHP<=0) win();
+}
+
+function jumpscare(){
+  let j=document.createElement('div');
+  j.className='jumpscare';
+  document.body.appendChild(j);
+  setTimeout(()=>j.remove(),500);
+}
+
+function shakeScreen(){
+  document.body.style.transform='translate('+((Math.random()-0.5)*20)+'px,'+((Math.random()-0.5)*20)+'px)';
+  setTimeout(()=>document.body.style.transform='translate(0,0)',100);
+}
+
+function win(){
+  alert('ULTRA+++ GODMODE WINNER 🤯🔥');
+  location.reload();
+}
+</script>
+
+</body>
+</html>
